@@ -67,3 +67,62 @@ db.students.aggregate([{$unwind:"$grades"},{$group:{_id:"$grades.subject",averag
 db.students.aggregate([{$unwind:"$grades"},{$group:{_id:"$_id",name:{$first:"$name"},address:{$first:"$address"},averageScore:{$avg:"$grades.score"}}},{$sort:{averageScore:-1}},{$limit:1}])
 db.students.drop()
 
+
+
+
+
+
+
+db.createCollection("blogPosts")
+
+db.blogPosts.insertMany([{
+    id:1,
+    title:"First",
+    comments:[
+        {username:"Narlos",
+        text:"Great God"},
+        {username:"Charlos",
+        text:"Good God"}
+    ]
+},
+{
+    id:2,
+    title:"Second",
+    comments:[
+        {username:"Barlos",
+        text:"Great Angel"},
+        {username:"Harlos",
+        text:"Good Angel"}
+    ]
+},
+{
+    id:3,
+    title:"Third",
+    comments:[
+        {username:"Varlos",
+        text:"Great Devil"},
+        {username:"Larlos",
+        text:"Bad Devil"}
+    ]
+}
+])
+
+db.blogPosts.findOne({ "id": 2 }, { "comments": { $slice: [1,1] } })
+
+db.blogPosts.aggregate([
+    { $match: { "id": 2} },
+    { $project: { "commentsSize": { $size: "$comments" } } }
+  ])
+
+db.blogPosts.findOne({ "id": 4 }, { "comments": { $slice: 2 } })
+
+
+db.blogPosts.updateOne(
+    { "id": 4 },
+    { $set: { "comments.1": [{ "user_name": "User1", "text": "Comment1" }, { "user_name": "User2", "text": "Comment2" }] } },
+    {upsert:true}
+  )
+
+db.blogPosts.findOne(
+    {"id":4}
+)
